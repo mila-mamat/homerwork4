@@ -18,6 +18,14 @@ section:not(:first-child) {
   display: none;
 }
 
+/* alert box keep hidden till user make a correct/wrong choice  */
+[data-state="hidden"]{
+  display:none;
+}
+[data-state="display"]{
+  display:block;
+}
+
 /* adjust the container width in medium screen  */
 @media (max-width: 991px) {
   .w-50 {

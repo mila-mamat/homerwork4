@@ -45,11 +45,11 @@
           <li><button class="btn btn-primary btn-sm m-1" id="3"></button></li>
         </ul>
         <div>
-          <div class="alert alert-success p-3 d-none" role="alert">
+          <div class="alert alert-success p-1" data-state="hidden" role="alert" id="alert-correct">
             Correct!
           </div>
-          <div class="alert alert-danger p-3 d-none" role="alert">
-            Incorrect.
+          <div class="alert alert-danger p-1" data-state="hidden" role="alert" id="alert-wrong">
+            Wrong!
           </div>
         </div>
       </section>
@@ -64,7 +64,7 @@
 
       <!-- forth section displays highest score, navigates to start page. hidden once Go back is clicked. -->
       <section id="end-page" class="mx-auto mt-3 p-3 w-50">
-        <h4 class="font-weight-bold mb-3 mt-3">High scores</h4>
+        <h4 class="font-weight-bold mb-3 mt-3">High Scores Top 5!!!</h4>
         <ol id="high-scores" class="bg-light align-items-center p-3"></ol>
         <button class="btn btn-primary btn-sm m-3" id="go-back-btn">
           Go Back

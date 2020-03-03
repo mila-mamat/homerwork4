@@ -5,18 +5,21 @@ document.querySelector("#view-scores").addEventListener("click", function() {
   document.querySelector("#question-page").style.display = "none";
   document.querySelector("#result-page").style.display = "none";
   listRender();
+  //just in case someone stopped in the middle of quiz and go to highscores
+  clearInterval(interval)
 });
 
 // start page : onclick --> start timing and display first question
 document.querySelector("#start-btn").addEventListener("click", function() {
   document.querySelector("#start-page").style.display = "none";
   document.querySelector("#question-page").style.display = "block";
-  //display timer;reset timer to 60s and start counting down
+  //display timer;reset timer to 80s and start counting down
   document.querySelector("#timer").style.display = "block";
-  timeLeft = 60;
+  timeLeft = 80;
   timerRender();
   startTimer();
-  //display the first question from question bank
+  //display the first question from question bank;reset question index if user retake the quiz
+  questionIndex = 0;
   getQuestions();
 });
 
@@ -30,10 +33,9 @@ function startTimer() {
 //render the time left, alert and end the quiz if time is up
 function timerRender() {
   if (timeLeft < 0) {
-    clearInterval(interval);
     //adjusting timeleft from -1 to 0
+    alert("Time up!")
     timeLeft++;
-    alert("Time is up");
     endQuiz();
   } else {
     document.querySelector("#time-left").textContent = timeLeft;
@@ -71,28 +73,78 @@ questionBank = [
 ];
 
 //get questions from question bank and display
-let questionIndex = 0;
 function getQuestions() {
   //select a question from question bank and insert question text
-  let questionSelected = questionBank[questionIndex];
-  document.querySelector("#question-text").textContent =
-    questionSelected.question;
-  //insert multiple choices
-  for (i = 0; i < 4; i++) {
-    document.querySelector(`#${CSS.escape(i)}`).textContent =
-      i + 1 + ". " + questionSelected.choices[i];
+  if (questionIndex < questionBank.length) {
+    questionSelected = questionBank[questionIndex];
+    document.querySelector("#question-text").textContent =
+      questionSelected.question;
+    //insert multiple choices
+    for (i = 0; i < 4; i++) {
+      document.querySelector(`#${CSS.escape(i)}`).textContent =
+        i + 1 + ". " + questionSelected.choices[i];
+    }
+    //increase index to push the question to next one next time
+    questionIndex++;
+  } else {
+    //if no questions left, end quiz ?
+    endQuiz();
   }
 }
 
+//alert correct / wrong after user's choice
+document.querySelector("#multiple-choices").addEventListener("click", function(event) {
+    //get the answer string of the clicked button
+    if(event.target.nodeName === "BUTTON"){
+      let choice = event.target.textContent.slice(3);
+      //if the answer is correct
+      let correctAnswer = questionSelected.correctAnswer;
+      if (choice === correctAnswer) {
+        alertCorrect();
+      } else { // if the answer is wrong
+        alertWrong();
+        timeLeft= timeLeft -15;
+        document.querySelector("#time-left").textContent = timeLeft;
+        //make sure there is enough time left after penalty
+        if(timeLeft <= 0){
+        alert("Opps! your time is below 0 already!")
+        endQuiz()
+        } 
+      }
+    }
+  });
+
+function alertCorrect() {
+  let state = document.querySelector("#alert-correct");
+  state.setAttribute("data-state", "display");
+  setTimeout(function() {
+    state.setAttribute("data-state", "hidden");
+    getQuestions()
+  }, 300);
+}
+
+function alertWrong() {
+  let state = document.querySelector("#alert-wrong");
+  state.setAttribute("data-state", "display");
+  setTimeout(function() {
+    state.setAttribute("data-state", "hidden");
+    getQuestions()
+  }, 300);
+
+}
+
+//end quiz and display result page if time is up or all questions are done. 
 function endQuiz() {
   document.querySelector("#question-page").style.display = "none";
   document.querySelector("#result-page").style.display = "block";
   document.querySelector("#final-score").textContent = timeLeft;
+  //stop counting down
+  clearInterval(interval);
+ 
 }
 
 //result page: display final score, get user info
 //retrive stored scores from client
-
 let storedScores = JSON.parse(localStorage.getItem("storedScores"));
 console.log(storedScores);
 //storage equals to an empty array if no previous scores
@@ -157,4 +209,5 @@ document.querySelector("#clear-btn").addEventListener("click", function() {
 document.querySelector("#go-back-btn").addEventListener("click", function() {
   document.querySelector("#end-page").style.display = "none";
   document.querySelector("#start-page").style.display = "block";
+  document.querySelector("#timer").style.display = "none";
 });
