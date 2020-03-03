@@ -1,0 +1,45 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 16px;
+  background-color: #fdfdfd;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+/* At start, all sections are hidden except start-page */
+section:not(:first-child) {
+  display: none;
+}
+#timer {
+  display: none;
+}
+
+/* adjust the container width in medium screen  */
+@media (max-width: 991px) {
+  .w-50 {
+    width: 75% !important;
+  }
+}
+
+/* adjust container width and font-size in small screen  */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.2rem;
+  }
+
+  .w-50 {
+    width: 100% !important;
+  }
+
+  .p-3 {
+    padding: 0.2rem !important;
+  }
+}
