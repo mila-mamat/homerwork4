@@ -1,28 +1,40 @@
+let startPage = document.querySelector("#start-page");
+let questionPage = document.querySelector("#question-page");
+let resultPage = document.querySelector("#result-page");
+let endPage = document.querySelector("#end-page");
+
+
+//header
+let timerContainerDiv = document.querySelector("#timer-container");
+let timerContainerSpan = document.querySelector("#time-left");
+let timeLeft; // times left during the quiz, displayed in timerContainerDiv
 //View Highscores will lead to end-page, all other pages will be hidden
 document.querySelector("#view-scores").addEventListener("click", function() {
-  document.querySelector("#end-page").style.display = "block";
-  document.querySelector("#start-page").style.display = "none";
-  document.querySelector("#question-page").style.display = "none";
-  document.querySelector("#result-page").style.display = "none";
+  endPage.style.display = "block";
+  startPage.style.display = "none";
+  questionPage.style.display = "none";
+  resultPage.style.display = "none";
   listRender();
-  //just in case someone stopped in the middle of quiz and go to highscores
-  clearInterval(interval)
+  //stop timer if someone stopped in the middle of quiz and go to highscores
+  clearInterval(interval);
 });
+
 
 // start page : onclick --> start timing and display first question
 document.querySelector("#start-btn").addEventListener("click", function() {
-  document.querySelector("#start-page").style.display = "none";
-  document.querySelector("#question-page").style.display = "block";
+  startPage.style.display = "none";
+  questionPage.style.display = "block";
   //display timer;reset timer to 80s and start counting down
-  document.querySelector("#timer").style.display = "block";
+  timerContainerDiv.style.display = "block";
   timeLeft = 80;
   timerRender();
   startTimer();
-  //display the first question from question bank;reset question index if user retake the quiz
+  //display the first question from question bank;reset question index if user retake the quiz without refreshing the website
   questionIndex = 0;
   getQuestions();
 });
 
+//timer counting down every second
 function startTimer() {
   interval = setInterval(function() {
     timeLeft--;
@@ -30,33 +42,37 @@ function startTimer() {
   }, 1000);
 }
 
-//render the time left, alert and end the quiz if time is up
+//display the time left, alert and end the quiz if time is up
 function timerRender() {
   if (timeLeft < 0) {
     //adjusting timeleft from -1 to 0
-    alert("Time up!")
+    alert("Time up!");
     timeLeft++;
     endQuiz();
   } else {
-    document.querySelector("#time-left").textContent = timeLeft;
+    timerContainerSpan.textContent = timeLeft;
   }
 }
 
 //question-page: iterate through question bank on click
+let questionBank = {};
+let questionIndex;
+let questionSelected; //question selected from question bank in squence using index
+
 questionBank = [
   {
     question: "Commonly used data types DO NOT include:",
-    choices: ["Strings", "Booleans", "Alerts", "Numbers"],
+    options: ["Strings", "Booleans", "Alerts", "Numbers"],
     correctAnswer: "Alerts"
   },
   {
     question: "The condition in an if/else statement is closed with:",
-    choices: ["Quotes", "Curley brackets", "Comma", "Square brackets"],
+    options: ["Quotes", "Curley brackets", "Comma", "Square brackets"],
     correctAnswer: "Curley brackets"
   },
   {
     question: "Arrays in JavaScript can be used to store:",
-    choices: [
+    options: [
       "Numbers and strings",
       "Booleans",
       "Other arrays",
@@ -67,12 +83,11 @@ questionBank = [
   {
     question:
       "String values must  be enclosed within _____ when assigned to variables.",
-    choices: ["Commas", "Quotes", "Curley brackets", "Parentheses"],
+    options: ["Commas", "Quotes", "Curley brackets", "Parentheses"],
     correctAnswer: "Quotes"
   }
 ];
 
-//get questions from question bank and display
 function getQuestions() {
   //select a question from question bank and insert question text
   if (questionIndex < questionBank.length) {
@@ -82,7 +97,7 @@ function getQuestions() {
     //insert multiple choices
     for (i = 0; i < 4; i++) {
       document.querySelector(`#${CSS.escape(i)}`).textContent =
-        i + 1 + ". " + questionSelected.choices[i];
+        i + 1 + ". " + questionSelected.options[i];
     }
     //increase index to push the question to next one next time
     questionIndex++;
@@ -92,24 +107,28 @@ function getQuestions() {
   }
 }
 
-//alert correct / wrong after user's choice
-document.querySelector("#multiple-choices").addEventListener("click", function(event) {
+//alert correct / wrong after user's answer
+document
+  .querySelector("#multiple-choices")
+  .addEventListener("click", function(event) {
     //get the answer string of the clicked button
-    if(event.target.nodeName === "BUTTON"){
-      let choice = event.target.textContent.slice(3);
+    if (event.target.nodeName === "BUTTON") {
+      let usersAnswer = event.target.textContent.slice(3);
       //if the answer is correct
-      let correctAnswer = questionSelected.correctAnswer;
-      if (choice === correctAnswer) {
+      if (usersAnswer === questionSelected.correctAnswer) {
         alertCorrect();
-      } else { // if the answer is wrong
+      } else {
+        // if the answer is wrong
         alertWrong();
-        timeLeft= timeLeft -15;
-        document.querySelector("#time-left").textContent = timeLeft;
+        timeLeft = timeLeft - 15;
+        timerContainerSpan.textContent = timeLeft;
         //make sure there is enough time left after penalty
-        if(timeLeft <= 0){
-        alert("Opps! your time is below 0 already!")
-        endQuiz()
-        } 
+        if (timeLeft <= 0) {
+          setTimeout(function() {
+            alert("Opps! No more time left after 15s penalty.");
+            endQuiz();
+          }, 500);
+        }
       }
     }
   });
@@ -119,8 +138,8 @@ function alertCorrect() {
   state.setAttribute("data-state", "display");
   setTimeout(function() {
     state.setAttribute("data-state", "hidden");
-    getQuestions()
-  }, 300);
+    getQuestions();
+  }, 500);
 }
 
 function alertWrong() {
@@ -128,72 +147,63 @@ function alertWrong() {
   state.setAttribute("data-state", "display");
   setTimeout(function() {
     state.setAttribute("data-state", "hidden");
-    getQuestions()
-  }, 300);
-
+    getQuestions();
+  }, 500);
 }
 
-//end quiz and display result page if time is up or all questions are done. 
+//end quiz and display result page if time is up or all questions are done.
 function endQuiz() {
-  document.querySelector("#question-page").style.display = "none";
-  document.querySelector("#result-page").style.display = "block";
+  questionPage.style.display = "none";
+  resultPage.style.display = "block";
   document.querySelector("#final-score").textContent = timeLeft;
   //stop counting down
   clearInterval(interval);
- 
 }
-
 //result page: display final score, get user info
 //retrive stored scores from client
-let storedScores = JSON.parse(localStorage.getItem("storedScores"));
-console.log(storedScores);
+
+let storedScores;
+document.querySelector("#submit-btn").addEventListener("click", function(event) {
+  storedScores = JSON.parse(localStorage.getItem("storedScores"));
 //storage equals to an empty array if no previous scores
-let storage = storedScores || [];
-document
-  .querySelector("#submit-btn")
-  .addEventListener("click", function(event) {
-    event.preventDefault();
-    // get user info and add into stroed scores
-    let userInfo = {
-      userName: document
-        .querySelector("#initial")
-        .value.trim()
-        .toUpperCase(),
-      userScore: timeLeft
-    };
-    console.log(userInfo);
-    storage.push(userInfo);
-    //sort stored scroes by score
-    storage.sort(function(a, b) {
-      return b.userScore - a.userScore;
-    });
-    //store updated scores
-    localStorage.setItem("storedScores", JSON.stringify(storage));
-    console.log(localStorage);
-    //direct to forth page
-    document.querySelector("#result-page").style.display = "none";
-    document.querySelector("#end-page").style.display = "block";
-    listRender();
+storedScores = storedScores || [];
+  event.preventDefault();
+  // get user info and add into stroed scores
+  let userInfo = {
+    userName: document.querySelector("#initial").value.trim().toUpperCase(),
+    userScore: timeLeft
+  };
+  storedScores.push(userInfo);
+  //sort stored scroes by score
+  storedScores.sort(function(a, b) {
+    return b.userScore - a.userScore;
   });
+  //store updated scores
+  localStorage.setItem("storedScores", JSON.stringify(storedScores));
+  //direct to forth page
+  resultPage.style.display = "none";
+  endPage.style.display = "block";
+  listRender();
+});
+
 
 // end-page: list top 5 scores stored. Direct to start-page or clear stored scores by click.
 //list top 5 scores
-let scoreList = document.querySelector("#high-scores");
-let placeHolder = document.createElement("div");
-placeHolder.textContent = "No scores available yet.";
-
 function listRender() {
-  //clean up the lists if append earlier
+  let scoreList = document.querySelector("#high-scores");
+  //clean up the <ol> to aboid <li>s from stacking up if users retook the quiz without refreshing
   scoreList.innerHTML = "";
-  // if no scores are stored(routed by "View highscores" directly), display place-holder
   storedScores = JSON.parse(localStorage.getItem("storedScores"));
   if (!storedScores) {
+    // display place-holder if no scores are stored(ie,routed by "View highscores" directly or user cleared scores)
+    let placeHolder = document.createElement("div");
+    placeHolder.textContent = "No scores available yet.";// 
     scoreList.appendChild(placeHolder);
   } else {
+    //list the top 5 high scores stored
     for (i = 0; i < 5; i++) {
-      highScoreInfo = document.createElement("li");
-      highScoreInfo.textContent =
-        storedScores[i].userName + " - " + storedScores[i].userScore;
+      let highScoreInfo = document.createElement("li");
+      highScoreInfo.textContent = storedScores[i].userName + " - " + storedScores[i].userScore;
       scoreList.appendChild(highScoreInfo);
     }
   }
@@ -207,7 +217,7 @@ document.querySelector("#clear-btn").addEventListener("click", function() {
 
 //direct to start-page
 document.querySelector("#go-back-btn").addEventListener("click", function() {
-  document.querySelector("#end-page").style.display = "none";
-  document.querySelector("#start-page").style.display = "block";
-  document.querySelector("#timer").style.display = "none";
+  endPage.style.display = "none";
+  startPage.style.display = "block";
+  timerContainerDiv.style.display = "none";
 });

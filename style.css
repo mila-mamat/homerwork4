@@ -14,7 +14,7 @@ body {
 section:not(:first-child) {
   display: none;
 }
-#timer {
+#timer-container {
   display: none;
 }
 
@@ -31,6 +31,12 @@ section:not(:first-child) {
   .w-50 {
     width: 75% !important;
   }
+}
+
+/* remove the focus effect on the button that is inherited from last question */
+.btn-primary.focus, .btn-primary:focus {
+  box-shadow: none !important;
+  background-color: #007bff;
 }
 
 /* adjust container width and font-size in small screen  */
