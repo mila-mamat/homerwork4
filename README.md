@@ -29,7 +29,3 @@ Link to final result:https://mila-mamat.github.io/homerwork4/index.html
 ### Alert if time is up
 ![](/gif/timeUp.gif)
 
-## Bugs that I can't fix so far
-1. When jumping to the next question, the same button user clicked at the last question will be highlighted. (I think it might be related to bootstrap button :focus effect)
-2. If time is running out, and user selected a wrong answer at the last question, website only displays the alert for [Run out of time due to -15s penalty], but doesn't display [Wrong answer].
-![](/gif/Bugs.gif)
