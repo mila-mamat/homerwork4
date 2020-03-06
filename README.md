@@ -29,3 +29,5 @@ Link to final result:https://mila-mamat.github.io/homerwork4/index.html
 ### Alert if time is up
 ![](/gif/timeUp.gif)
 
+## Extra work
+I rewrote the script using jQuery instead of JavaScript as a practice.
