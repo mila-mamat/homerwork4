@@ -20,7 +20,7 @@ Build a timed code quiz with multiple-choice questions.
 9. I accept negative numbers as user score(run out of time + wrong answers). It is not a bug if you see a negative score.(personal choice)
   
 ## Final result 
-Link to final result:https://mila-mamat.github.io/homerwork4/index.html
+Link to final result:https://mila-mamat.github.io/homerwork4-JS-code-quiz/index.html
 
 ## Demo
 ### Normal Quiz Flow
